@@ -37,9 +37,11 @@ class _OrderPageState extends State<OrderPage> {
           children: <Widget>[
             DrawerHeader(
               decoration: BoxDecoration(color: Colors.blue),
+              child: Center(
               child: Text(
                 'Categories',
                 style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
               ),
             ),
             ...['All', 'Meat', 'Vegetables'].map((category) {
@@ -124,7 +126,7 @@ class _OrderPageState extends State<OrderPage> {
                           Text(
                             category,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 25,
                               fontWeight: selectedCategory == category ? FontWeight.bold : FontWeight.normal,
                               color: selectedCategory == category ? Colors.blue : Colors.black,
                             ),
@@ -160,7 +162,7 @@ class _OrderPageState extends State<OrderPage> {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: ListTile(
-        leading: Image.asset(imagePath, width: 50, height: 50, fit: BoxFit.cover),
+        leading: Image.asset(imagePath, width: 100, height: 100, fit: BoxFit.cover),
         title: Text(name),
         subtitle: Text(quantity),
         trailing: IconButton(
