@@ -10,20 +10,23 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   String selectedCategory = 'All';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  
+
   final Map<String, List<Map<String, String>>> menuItems = {
     'All': [
-      {'name': 'Sliced pork', 'quantity': '4pc', 'image': 'assets/images/pork.jpg'},
-      {'name': 'Sliced beef', 'quantity': '4pc', 'image': 'assets/images/beef.jpg'},
-      {'name': 'Mixed Vegetables', 'quantity': '1pc', 'image': 'assets/images/vegetables.jpg'},
-      {'name': 'Shrimp Balls', 'quantity': '2pc', 'image': 'assets/images/shrimp.jpg'},
+      {'name': 'Sliced pork', 'quantity': '4pc', 'image': 'assets/images/pork.jpg', 'price': '0'},
+      {'name': 'Sliced beef', 'quantity': '4pc', 'image': 'assets/images/beef.jpg', 'price': '0'},
+      {'name': 'Mixed Vegetables', 'quantity': '1pc', 'image': 'assets/images/vegetables.jpg', 'price': '0'},
+      {'name': 'Shrimp Balls', 'quantity': '2pc', 'image': 'assets/images/shrimp.jpg', 'price': '0'},
     ],
     'Meat': [
-      {'name': 'Sliced pork', 'quantity': '4pc', 'image': 'assets/images/pork.jpg'},
-      {'name': 'Sliced beef', 'quantity': '4pc', 'image': 'assets/images/beef.jpg'},
+      {'name': 'Sliced pork', 'quantity': '4pc', 'image': 'assets/images/pork.jpg', 'price': '0'},
+      {'name': 'Sliced beef', 'quantity': '4pc', 'image': 'assets/images/beef.jpg', 'price': '0'},
     ],
     'Vegetables': [
-      {'name': 'Mixed Vegetables', 'quantity': '1pc', 'image': 'assets/images/vegetables.jpg'},
+      {'name': 'Mixed Vegetables', 'quantity': '1pc', 'image': 'assets/images/vegetables.jpg', 'price': '0'},
+    ],
+    'Ready to eat': [
+      {'name': 'Shrimp Balls', 'quantity': '2pc', 'image': 'assets/images/shrimp.jpg', 'price': '0'},
     ]
   };
 
@@ -38,13 +41,13 @@ class _OrderPageState extends State<OrderPage> {
             DrawerHeader(
               decoration: BoxDecoration(color: Colors.blue),
               child: Center(
-              child: Text(
-                'Categories',
-                style: TextStyle(color: Colors.white, fontSize: 24),
-              ),
+                child: Text(
+                  'Categories',
+                  style: TextStyle(color: Colors.white, fontSize: 24),
+                ),
               ),
             ),
-            ...['All', 'Meat', 'Vegetables'].map((category) {
+            ...['All', 'Meat', 'Vegetables', 'Ready to eat'].map((category) {
               return ListTile(
                 title: Text(category),
                 onTap: () {
@@ -68,32 +71,83 @@ class _OrderPageState extends State<OrderPage> {
                 height: 150,
                 fit: BoxFit.cover,
               ),
-                Positioned(
+              Positioned(
                 top: 20,
                 left: 10,
                 child: GestureDetector(
                   child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 100,
-                    height: 100,
-                  ),
+                    borderRadius: BorderRadius.circular(25),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 100,
+                      height: 100,
+                    ),
                   ),
                 ),
-                ),
+              ),
               Positioned(
-                top: 20,
+                top: 10,
+                right: 10,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                    child: Row(
+                    children: [
+                      Text(
+                      'Table 4',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                      icon: Icon(Icons.info_outline),
+                      onPressed: () {
+                        // TODO: ใส่โค้ดเพื่อแสดงรายละเอียด Table 4
+                      },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 10,
                 right: 10,
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.language, color: Colors.white),
-                      onPressed: () {},
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.language, color: Colors.black),
+                        onPressed: () {},
+                      ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.shopping_cart, color: Colors.white),
-                      onPressed: () {},
+                    SizedBox(width: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.note, color: Colors.black), // ไอคอนกระดาษโน้ต
+                        onPressed: () {
+                          // TODO: ใส่โค้ดเพื่อไปยังหน้าบิลการสั่งอาหาร
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: Icon(Icons.shopping_cart, color: Colors.black),
+                        onPressed: () {},
+                      ),
                     ),
                   ],
                 ),
@@ -112,37 +166,44 @@ class _OrderPageState extends State<OrderPage> {
                   },
                 ),
                 SizedBox(width: 20),
-                ...['All', 'Meat', 'Vegetables'].map((category) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = category;
-                        });
-                      },
-                      child: Column(
-                        children: [
-                          Text(
-                            category,
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: selectedCategory == category ? FontWeight.bold : FontWeight.normal,
-                              color: selectedCategory == category ? Colors.blue : Colors.black,
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: ['All', 'Meat', 'Vegetables', 'Ready to eat'].map((category) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedCategory = category;
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                Text(
+                                  category,
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: selectedCategory == category ? FontWeight.bold : FontWeight.normal,
+                                    color: selectedCategory == category ? Colors.blue : Colors.black,
+                                  ),
+                                ),
+                                if (selectedCategory == category)
+                                  Container(
+                                    margin: EdgeInsets.only(top: 4),
+                                    height: 3,
+                                    width: 30,
+                                    color: Colors.blue,
+                                  ),
+                              ],
                             ),
                           ),
-                          if (selectedCategory == category)
-                            Container(
-                              margin: EdgeInsets.only(top: 4),
-                              height: 3,
-                              width: 30,
-                              color: Colors.blue,
-                            ),
-                        ],
-                      ),
+                        );
+                      }).toList(),
                     ),
-                  );
-                }).toList(),
+                  ),
+                ),
               ],
             ),
           ),
