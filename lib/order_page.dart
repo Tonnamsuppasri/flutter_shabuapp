@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_shabuapp/order_cart_page.dart';
 import 'package:flutter_shabuapp/order_list_page.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'cart_provider.dart';
+import 'package:provider/provider.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -14,7 +16,6 @@ class _OrderPageState extends State<OrderPage> {
   String selectedCategory = 'All';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _showQrCode = false;
-  int _quantity = 1;
 
   final Map<String, List<Map<String, String>>> menuItems = {
     'All': [
@@ -123,7 +124,7 @@ class _OrderPageState extends State<OrderPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(25),
                     child: Image.asset(
-                      'assets/images/logo.png',
+                      'assets/images/logo.jpg',
                       width: 100,
                       height: 100,
                     ),
@@ -173,7 +174,7 @@ class _OrderPageState extends State<OrderPage> {
                         children: [
                           IconButton(
                             icon: Image.asset(
-                              'assets/images/engflag.png',
+                              'assets/images/engflag.jpg',
                               width: 24,
                               height: 24,
                             ),
@@ -192,7 +193,11 @@ class _OrderPageState extends State<OrderPage> {
                         alignment: Alignment.center,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.note, color: Colors.black),
+                            icon: Image.asset(
+                              'assets/images/bill.png',
+                              width: 24,
+                              height: 24,
+                              ),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -238,7 +243,7 @@ class _OrderPageState extends State<OrderPage> {
                                 shape: BoxShape.circle,
                               ),
                               child: Text(
-                                '0', // ตัวเลขตัวอย่าง
+                                '${Provider.of<CartProvider>(context).getTotalQuantity()}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -368,14 +373,15 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ),
         ),
-        title: Text(name,style: TextStyle(fontSize: 16),),
+        title: Text(name, style: TextStyle(fontSize: 16)),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text('($quantity)', style: TextStyle(fontSize: 14)),
             Text(
-              '($quantity)'
-              ,style: TextStyle(fontSize: 14)),
-            Text('฿$price',style: TextStyle(fontSize: 12),), // ปรับขนาดตัวอักษร), // แสดง price ที่นี่
+              '฿$price',
+              style: TextStyle(fontSize: 12),
+            ), // ปรับขนาดตัวอักษร), // แสดง price ที่นี่
           ],
         ),
         trailing: Container(
@@ -394,7 +400,7 @@ class _OrderPageState extends State<OrderPage> {
           child: IconButton(
             icon: Icon(Icons.shopping_cart, color: Colors.red),
             onPressed: () {
-              _showOrderDetails(name, quantity, imagePath, price);
+              _showOrderDetails(context, name, quantity, imagePath, price);
             },
           ),
         ),
@@ -415,7 +421,7 @@ class _OrderPageState extends State<OrderPage> {
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(25),
                   child: Image.asset(
-                    'assets/images/logo.png', // เปลี่ยนเป็น path รูปภาพ logo ของคุณ
+                    'assets/images/logo.jpg', // เปลี่ยนเป็น path รูปภาพ logo ของคุณ
                     width: 50,
                     height: 50,
                   ),
@@ -477,97 +483,89 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _showOrderDetails(
-    String name,
-    String quantity,
-    String imagePath,
-    String price,
-  ) {
-    _quantity = 1; // รีเซ็ต _quantity เมื่อเปิด Bottom Sheet
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return WillPopScope(
-              onWillPop: () async {
-                setState(() {
-                  _quantity = 1;
-                });
-                return true;
-              },
-              child: Container(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(imagePath, width: 150, height: 150),
+  BuildContext context,
+  String name,
+  String quantity,
+  String imagePath,
+  String price,
+) {
+  int _quantity = 1;
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(imagePath, width: 150, height: 150),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('$name ($quantity)'),
+                    Text('฿$price'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Divider(),
+                const Text('Detail'),
+                const Divider(),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Provider.of<CartProvider>(context, listen: false).addItem({
+                          'name': name,
+                          'quantity': _quantity,
+                          'price': price,
+                          'image': imagePath,
+                        });
+
+                        Navigator.pop(context);
+                      },
+                      label: const Text('ADD'),
+                      icon: const Icon(Icons.shopping_cart, color: Colors.red),
                     ),
-                    SizedBox(height: 10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('$name ($quantity)'),
-                        Text('฿$price'),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Divider(),
-                    Text('Detail'),
-                    Divider(),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () async {
-                            Map<String, dynamic> row = {
-                              'name': name,
-                              'quantity': _quantity,
-                              'price': price,
-                              'image': imagePath,
-                            };
-                            Navigator.pop(context);
+                        IconButton(
+                          icon: const Icon(Icons.arrow_drop_up),
+                          onPressed: () {
                             setState(() {
-                              _quantity = 1;
+                              _quantity++;
                             });
                           },
-                          label: Text('ADD'),
-                          icon: Icon(Icons.shopping_cart, color: Colors.red),
                         ),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.arrow_drop_up),
-                              onPressed: () {
-                                setState(() {
-                                  _quantity++;
-                                });
-                              },
-                            ),
-                            Text('$_quantity'),
-                            IconButton(
-                              icon: Icon(Icons.arrow_drop_down),
-                              onPressed: () {
-                                if (_quantity > 1) {
-                                  setState(() {
-                                    _quantity--;
-                                  });
-                                }
-                              },
-                            ),
-                          ],
+                        Text('$_quantity'),
+                        IconButton(
+                          icon: const Icon(Icons.arrow_drop_down),
+                          onPressed: () {
+                            if (_quantity > 1) {
+                              setState(() {
+                                _quantity--;
+                              });
+                            }
+                          },
                         ),
                       ],
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 }

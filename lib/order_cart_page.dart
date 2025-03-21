@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'cart_provider.dart';
+import 'order_list_page.dart'; // เพิ่มการนำเข้าหน้า OrderListPage
 
 class OrderCartPage extends StatefulWidget {
   const OrderCartPage({super.key});
@@ -8,45 +11,11 @@ class OrderCartPage extends StatefulWidget {
 }
 
 class _OrderCartPageState extends State<OrderCartPage> {
-  List<Map<String, dynamic>> cartItems = [
-    {
-      'name': 'Sliced pork',
-      'image': 'assets/images/pork.jpg',
-      'price': 0,
-      'quantity': 2,
-    },
-    {
-      'name': 'Sliced beef',
-      'image': 'assets/images/beef.jpg',
-      'price': 0,
-      'quantity': 2,
-    },
-  ];
-
-  void updateQuantity(int index, int change) {
-    setState(() {
-      cartItems[index]['quantity'] += change;
-      if (cartItems[index]['quantity'] < 1) {
-        cartItems[index]['quantity'] = 1;
-      }
-    });
-  }
-
-  void removeItem(int index) {
-    setState(() {
-      cartItems.removeAt(index);
-    });
-  }
-
-  int getTotalQuantity() {
-    return cartItems.fold(
-      0,
-      (sum, item) => sum + (item['quantity'] as int? ?? 0),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final cartProvider = Provider.of<CartProvider>(context);
+    final cartItems = cartProvider.cartItems;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -63,11 +32,11 @@ class _OrderCartPageState extends State<OrderCartPage> {
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              'Information as of 18:44.',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              'Information as of ${TimeOfDay.now().format(context)}.',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ),
           Expanded(
@@ -88,7 +57,7 @@ class _OrderCartPageState extends State<OrderCartPage> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.asset(
-                              item['image'],
+                              item['image'], 
                               width: 80,
                               height: 80,
                               fit: BoxFit.cover,
@@ -135,15 +104,15 @@ class _OrderCartPageState extends State<OrderCartPage> {
                                       children: [
                                         IconButton(
                                           icon: const Icon(Icons.arrow_drop_up),
-                                          onPressed:
-                                              () => updateQuantity(index, 1),
+                                          onPressed: () =>
+                                              cartProvider.updateQuantity(index, 1),
                                         ),
                                         IconButton(
                                           icon: const Icon(
                                             Icons.arrow_drop_down,
                                           ),
-                                          onPressed:
-                                              () => updateQuantity(index, -1),
+                                          onPressed: () =>
+                                              cartProvider.updateQuantity(index, -1),
                                         ),
                                       ],
                                     ),
@@ -153,7 +122,7 @@ class _OrderCartPageState extends State<OrderCartPage> {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: () => removeItem(index),
+                            onPressed: () => cartProvider.removeItem(index),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.red,
                               padding: const EdgeInsets.symmetric(
@@ -186,7 +155,10 @@ class _OrderCartPageState extends State<OrderCartPage> {
               boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
             ),
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+              // เมื่อกด "Order now" เก็บข้อมูลการสั่งซื้อและล้างตะกร้า
+              cartProvider.addOrder(); // เก็บข้อมูลการสั่งซื้อ
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 minimumSize: const Size(double.infinity, 50),
@@ -196,7 +168,7 @@ class _OrderCartPageState extends State<OrderCartPage> {
               ),
               icon: const Icon(Icons.shopping_cart, color: Colors.white),
               label: Text(
-                'Order now (${getTotalQuantity()})',
+                'Order now (${cartProvider.getTotalQuantity()})',
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
