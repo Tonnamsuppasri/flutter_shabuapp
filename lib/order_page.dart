@@ -131,34 +131,34 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 ),
               ),
-              Positioned(
-                top: 10,
+                Positioned(
+                top: 20,
                 right: 10,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
-                    children: [
-                      Text(
-                        'Table 4',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.info_outline),
-                        onPressed: () {
-                          _showTableDetails();
-                        },
-                      ),
-                    ],
+                  children: [
+                    Text(
+                    'Table 4',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    ),
+                    IconButton(
+                    icon: Icon(Icons.info_outline),
+                    onPressed: () {
+                      _showTableDetails();
+                    },
+                    ),
+                  ],
                   ),
                 ),
-              ),
+                ),
               Positioned(
                 bottom: 10,
                 right: 10,
@@ -412,71 +412,74 @@ class _OrderPageState extends State<OrderPage> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  child: Image.asset(
-                    'assets/images/logo.jpg', // เปลี่ยนเป็น path รูปภาพ logo ของคุณ
-                    width: 50,
-                    height: 50,
-                  ),
-                ),
-                title: Text('MAGIN YAKINIKU'),
-                trailing: IconButton(
-                  icon: Icon(Icons.keyboard_arrow_down),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    setState(() {
-                      _showQrCode = false; // ซ่อน QR code เมื่อปิด bottom sheet
-                    });
-                  },
-                ),
-              ),
-              Divider(),
-              if (_showQrCode) // แสดง QR code ถ้า _showQrCode เป็น true
-                Column(
-                  children: [
-                    Text('TABLE 4'),
-                    SizedBox(height: 10),
-                    QrImageView(
-                      data:
-                          'TABLE 4', // เปลี่ยนเป็นข้อมูลที่คุณต้องการให้ QR code แสดง
-                      version: QrVersions.auto,
-                      size: 200.0,
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: Image.asset(
+                        'assets/images/logo.jpg',
+                        width: 50,
+                        height: 50,
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    Text('SCAN FOR MENU'),
-                  ],
-                )
-              else
-                Column(
-                  children: [
-                    ListTile(
-                      title: Text('Buffet Shabu'),
-                      subtitle: Text('4 persons'),
-                      trailing: Text('18:38 - --:-- min'),
-                    ),
-                    Divider(),
-                    ListTile(title: Text('Terms of Service')),
-                    Divider(),
-                    ListTile(
-                      title: Text('Share QR Code with Friends'),
-                      trailing: Icon(Icons.chevron_right),
-                      onTap: () {
+                    title: Text('MAGIN YAKINIKU'),
+                    trailing: IconButton(
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      onPressed: () {
+                        Navigator.pop(context);
                         setState(() {
-                          _showQrCode = true; // แสดง QR code เมื่อกด
+                          _showQrCode = false;
                         });
                       },
                     ),
-                  ],
-                ),
-            ],
-          ),
+                  ),
+                  Divider(),
+                  if (_showQrCode)
+                    Column(
+                      children: [
+                        Text('TABLE 4', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 10),
+                        QrImageView(
+                          data: 'TABLE 4',
+                          version: QrVersions.auto,
+                          size: 200.0,
+                        ),
+                        SizedBox(height: 10),
+                        Text('SCAN FOR MENU', style: TextStyle(fontSize: 16)),
+                      ],
+                    )
+                  else
+                    Column(
+                      children: [
+                        ListTile(
+                          title: Text('Buffet Shabu'),
+                          subtitle: Text('4 persons'),
+                          trailing: Text('18:38 - --:-- min'),
+                        ),
+                        Divider(),
+                        ListTile(title: Text('Terms of Service')),
+                        Divider(),
+                        ListTile(
+                          title: Text('Share QR Code with Friends'),
+                          trailing: Icon(Icons.chevron_right),
+                          onTap: () {
+                            setState(() {
+                              _showQrCode = true;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            );
+          },
         );
       },
     );
