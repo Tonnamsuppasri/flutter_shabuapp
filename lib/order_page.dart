@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_shabuapp/order_cart_page.dart';
+import 'package:flutter_shabuapp/order_list_page.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
@@ -10,24 +13,66 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   String selectedCategory = 'All';
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _showQrCode = false;
+  int _quantity = 1;
 
   final Map<String, List<Map<String, String>>> menuItems = {
     'All': [
-      {'name': 'Sliced pork', 'quantity': '4pc', 'image': 'assets/images/pork.jpg', 'price': '0'},
-      {'name': 'Sliced beef', 'quantity': '4pc', 'image': 'assets/images/beef.jpg', 'price': '0'},
-      {'name': 'Mixed Vegetables', 'quantity': '1pc', 'image': 'assets/images/vegetables.jpg', 'price': '0'},
-      {'name': 'Shrimp Balls', 'quantity': '2pc', 'image': 'assets/images/shrimp.jpg', 'price': '0'},
+      {
+        'name': 'Sliced pork',
+        'quantity': '4pc',
+        'image': 'assets/images/pork.jpg',
+        'price': '0',
+      },
+      {
+        'name': 'Sliced beef',
+        'quantity': '4pc',
+        'image': 'assets/images/beef.jpg',
+        'price': '0',
+      },
+      {
+        'name': 'Mixed Vegetables',
+        'quantity': '1pc',
+        'image': 'assets/images/vegetables.jpg',
+        'price': '0',
+      },
+      {
+        'name': 'Shrimp Balls',
+        'quantity': '2pc',
+        'image': 'assets/images/shrimp.jpg',
+        'price': '0',
+      },
     ],
     'Meat': [
-      {'name': 'Sliced pork', 'quantity': '4pc', 'image': 'assets/images/pork.jpg', 'price': '0'},
-      {'name': 'Sliced beef', 'quantity': '4pc', 'image': 'assets/images/beef.jpg', 'price': '0'},
+      {
+        'name': 'Sliced pork',
+        'quantity': '4pc',
+        'image': 'assets/images/pork.jpg',
+        'price': '0',
+      },
+      {
+        'name': 'Sliced beef',
+        'quantity': '4pc',
+        'image': 'assets/images/beef.jpg',
+        'price': '0',
+      },
     ],
     'Vegetables': [
-      {'name': 'Mixed Vegetables', 'quantity': '1pc', 'image': 'assets/images/vegetables.jpg', 'price': '0'},
+      {
+        'name': 'Mixed Vegetables',
+        'quantity': '1pc',
+        'image': 'assets/images/vegetables.jpg',
+        'price': '0',
+      },
     ],
     'Ready to eat': [
-      {'name': 'Shrimp Balls', 'quantity': '2pc', 'image': 'assets/images/shrimp.jpg', 'price': '0'},
-    ]
+      {
+        'name': 'Shrimp Balls',
+        'quantity': '2pc',
+        'image': 'assets/images/shrimp.jpg',
+        'price': '0',
+      },
+    ],
   };
 
   @override
@@ -94,17 +139,20 @@ class _OrderPageState extends State<OrderPage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                    child: Row(
+                  child: Row(
                     children: [
                       Text(
-                      'Table 4',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        'Table 4',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       IconButton(
-                      icon: Icon(Icons.info_outline),
-                      onPressed: () {
-                        // TODO: ใส่โค้ดเพื่อแสดงรายละเอียด Table 4
-                      },
+                        icon: Icon(Icons.info_outline),
+                        onPressed: () {
+                          _showTableDetails();
+                        },
                       ),
                     ],
                   ),
@@ -118,35 +166,87 @@ class _OrderPageState extends State<OrderPage> {
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: IconButton(
-                        icon: Icon(Icons.language, color: Colors.black),
-                        onPressed: () {},
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Icon(Icons.note, color: Colors.black), // ไอคอนกระดาษโน้ต
-                        onPressed: () {
-                          // TODO: ใส่โค้ดเพื่อไปยังหน้าบิลการสั่งอาหาร
-                        },
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          IconButton(
+                            icon: Image.asset(
+                              'assets/images/engflag.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            onPressed: () {},
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(width: 10),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: IconButton(
-                        icon: Icon(Icons.shopping_cart, color: Colors.black),
-                        onPressed: () {},
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.note, color: Colors.black),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OrderListPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.shopping_cart,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => OrderCartPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          Positioned(
+                            top: 5,
+                            right: 5,
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                '0', // ตัวเลขตัวอย่าง
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -170,37 +270,48 @@ class _OrderPageState extends State<OrderPage> {
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: ['All', 'Meat', 'Vegetables', 'Ready to eat'].map((category) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedCategory = category;
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                Text(
-                                  category,
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontWeight: selectedCategory == category ? FontWeight.bold : FontWeight.normal,
-                                    color: selectedCategory == category ? Colors.blue : Colors.black,
-                                  ),
+                      children:
+                          ['All', 'Meat', 'Vegetables', 'Ready to eat'].map((
+                            category,
+                          ) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedCategory = category;
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      category,
+                                      style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight:
+                                            selectedCategory == category
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                        color:
+                                            selectedCategory == category
+                                                ? Colors.blue
+                                                : Colors.black,
+                                      ),
+                                    ),
+                                    if (selectedCategory == category)
+                                      Container(
+                                        margin: EdgeInsets.only(top: 4),
+                                        height: 3,
+                                        width: 30,
+                                        color: Colors.blue,
+                                      ),
+                                  ],
                                 ),
-                                if (selectedCategory == category)
-                                  Container(
-                                    margin: EdgeInsets.only(top: 4),
-                                    height: 3,
-                                    width: 30,
-                                    color: Colors.blue,
-                                  ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                              ),
+                            );
+                          }).toList(),
                     ),
                   ),
                 ),
@@ -209,9 +320,15 @@ class _OrderPageState extends State<OrderPage> {
           ),
           Expanded(
             child: ListView(
-              children: menuItems[selectedCategory]!.map((item) {
-                return _buildMenuItem(item['name']!, item['quantity']!, item['image']!);
-              }).toList(),
+              children:
+                  menuItems[selectedCategory]!.map((item) {
+                    return _buildMenuItem(
+                      item['name']!,
+                      item['quantity']!,
+                      item['image']!,
+                      item['price']!,
+                    );
+                  }).toList(),
             ),
           ),
         ],
@@ -219,18 +336,238 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Widget _buildMenuItem(String name, String quantity, String imagePath) {
+  Widget _buildMenuItem(
+    String name,
+    String quantity,
+    String imagePath,
+    String price,
+  ) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: ListTile(
-        leading: Image.asset(imagePath, width: 100, height: 100, fit: BoxFit.cover),
-        title: Text(name),
-        subtitle: Text(quantity),
-        trailing: IconButton(
-          icon: Icon(Icons.shopping_cart, color: Colors.red),
-          onPressed: () {},
+        leading: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8), // เพิ่มขอบมลให้รูปภาพ
+            child: Image.asset(
+              imagePath,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        title: Text(name,style: TextStyle(fontSize: 16),),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '($quantity)'
+              ,style: TextStyle(fontSize: 14)),
+            Text('฿$price',style: TextStyle(fontSize: 12),), // ปรับขนาดตัวอักษร), // แสดง price ที่นี่
+          ],
+        ),
+        trailing: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(Icons.shopping_cart, color: Colors.red),
+            onPressed: () {
+              _showOrderDetails(name, quantity, imagePath, price);
+            },
+          ),
         ),
       ),
+    );
+  }
+
+  void _showTableDetails() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: Image.asset(
+                    'assets/images/logo.png', // เปลี่ยนเป็น path รูปภาพ logo ของคุณ
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
+                title: Text('MAGIN YAKINIKU'),
+                trailing: IconButton(
+                  icon: Icon(Icons.keyboard_arrow_down),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    setState(() {
+                      _showQrCode = false; // ซ่อน QR code เมื่อปิด bottom sheet
+                    });
+                  },
+                ),
+              ),
+              Divider(),
+              if (_showQrCode) // แสดง QR code ถ้า _showQrCode เป็น true
+                Column(
+                  children: [
+                    Text('TABLE 4'),
+                    SizedBox(height: 10),
+                    QrImageView(
+                      data:
+                          'TABLE 4', // เปลี่ยนเป็นข้อมูลที่คุณต้องการให้ QR code แสดง
+                      version: QrVersions.auto,
+                      size: 200.0,
+                    ),
+                    SizedBox(height: 10),
+                    Text('SCAN FOR MENU'),
+                  ],
+                )
+              else
+                Column(
+                  children: [
+                    ListTile(
+                      title: Text('Buffet Shabu'),
+                      subtitle: Text('4 persons'),
+                      trailing: Text('18:38 - --:-- min'),
+                    ),
+                    Divider(),
+                    ListTile(title: Text('Terms of Service')),
+                    Divider(),
+                    ListTile(
+                      title: Text('Share QR Code with Friends'),
+                      trailing: Icon(Icons.chevron_right),
+                      onTap: () {
+                        setState(() {
+                          _showQrCode = true; // แสดง QR code เมื่อกด
+                        });
+                      },
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showOrderDetails(
+    String name,
+    String quantity,
+    String imagePath,
+    String price,
+  ) {
+    _quantity = 1; // รีเซ็ต _quantity เมื่อเปิด Bottom Sheet
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return WillPopScope(
+              onWillPop: () async {
+                setState(() {
+                  _quantity = 1;
+                });
+                return true;
+              },
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(imagePath, width: 150, height: 150),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('$name ($quantity)'),
+                        Text('฿$price'),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Divider(),
+                    Text('Detail'),
+                    Divider(),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            Map<String, dynamic> row = {
+                              'name': name,
+                              'quantity': _quantity,
+                              'price': price,
+                              'image': imagePath,
+                            };
+                            Navigator.pop(context);
+                            setState(() {
+                              _quantity = 1;
+                            });
+                          },
+                          label: Text('ADD'),
+                          icon: Icon(Icons.shopping_cart, color: Colors.red),
+                        ),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.arrow_drop_up),
+                              onPressed: () {
+                                setState(() {
+                                  _quantity++;
+                                });
+                              },
+                            ),
+                            Text('$_quantity'),
+                            IconButton(
+                              icon: Icon(Icons.arrow_drop_down),
+                              onPressed: () {
+                                if (_quantity > 1) {
+                                  setState(() {
+                                    _quantity--;
+                                  });
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
